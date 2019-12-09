@@ -138,10 +138,22 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ADC.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ADC.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="BackLight.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="BackLight.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Buttons.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Buttons.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="DS1307RTC.c">
@@ -166,6 +178,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="shapes.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="shapes.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="SPI.c">
