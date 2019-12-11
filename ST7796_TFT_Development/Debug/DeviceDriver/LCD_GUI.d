@@ -1,4 +1,4 @@
-LCD_GUI.d LCD_GUI.o: .././LCD_GUI.c \
+DeviceDriver/LCD_GUI.d DeviceDriver/LCD_GUI.o: ../DeviceDriver/LCD_GUI.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\sfr_defs.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h \
@@ -10,7 +10,8 @@ LCD_GUI.d LCD_GUI.o: .././LCD_GUI.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\version.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\fuse.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h \
- .././LCD_Driver.h .././LCD_GUI.h .././font.h
+ ../DeviceDriver/inc/LCD_Driver.h ../DeviceDriver/inc/LCD_GUI.h \
+ ../DeviceDriver/font.h
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -34,8 +35,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h:
 
-.././LCD_Driver.h:
+../DeviceDriver/inc/LCD_Driver.h:
 
-.././LCD_GUI.h:
+../DeviceDriver/inc/LCD_GUI.h:
 
-.././font.h:
+../DeviceDriver/font.h:

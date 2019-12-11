@@ -11,6 +11,7 @@
 #include <util/delay.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include "LCD_Driver.h"
 //#include "LCD_GUI.h"
 #include "SPI.h"
@@ -42,84 +43,91 @@ int main(void)
   LCD_Init();
   LCD_SetBackLight(20);
   LCD_direction(LCD_ROTATE_90);
-  Button_init();
+  pDDRV_Button_init();
   
-  drawFrame();
-  LCD_ShowString(320, 20, 2, "TETRIS", RED, BLACK, 0);
-  uint8_t ShapeNum = 4;
+  aTRS_ENG_drawBoundary();
+  LCD_ShowString(320, 20, 2, "TETRIS", YELLOW, BLACK, 0);
   
   while (1)
   {
-     uint8_t *field[SCREEN_HEIGHT * SCREEN_WIDTH] = {0};
+    __Button_Status button = pDDRV_Button_GetStatus();
+    char B_up[2];
+    char B_left[2];
+    char B_down[2];
+    char B_right[2];
+    char B_rotate[2];
+
+    sprintf(B_up, "%d", button.up);
+    sprintf(B_left, "%d", button.left);
+    sprintf(B_down, "%d", button.down);
+    sprintf(B_right, "%d", button.right);
+    sprintf(B_rotate, "%d", button.right);
+
+    LCD_ShowString(320, 100, 1, B_up, WHITE, BLACK, 0);
+    LCD_ShowString(320, 120, 1, B_left, WHITE, BLACK, 0);
+    LCD_ShowString(320, 140, 1, B_down, WHITE, BLACK, 0);
+    LCD_ShowString(320, 160, 1, B_right, WHITE, BLACK, 0);
+    LCD_ShowString(320, 180, 1, B_rotate, WHITE, BLACK, 0);
+
     
-//     for (int j = 0; j < 7; j++)
-//     {
-//       for (int i = 0; i < 16; i++)
-//       {
-//         drawCurrentShape(j, GREEN);
-//         _delay_ms(800);
-//         drawCurrentShape(j, BLACK);
-//         ShapeShiftDown();
-// 
-//         uint16_t buttonXVal = readButtonX();
-//         uint16_t buttonYVal = readButtonY();
-//         char Xval[6];
-//         char Yval[6];
-//         sprintf(Xval, "%4d", buttonXVal);
-//         sprintf(Yval, "%4d", buttonYVal);
-//         LCD_ShowString(320, 100, 1, Xval, WHITE, BLACK, 0);
-//         LCD_ShowString(320, 120, 1, Yval, WHITE, BLACK, 0);
-//       }
-//       returnShapeCursorHome();
-//     }
-    uint16_t buttonXVal = readButtonX();
-    uint16_t buttonYVal = readButtonY();
-    uint8_t  buttonSwitch = readButtonSwitch();
-    char Xval[6];
-    char Yval[6];
-    char Sval[6];
-    sprintf(Xval, "%4d", buttonXVal);
-    sprintf(Yval, "%4d", buttonYVal);
-    sprintf(Sval, "%4d", buttonSwitch);
-    LCD_ShowString(320, 100, 1, Xval, WHITE, BLACK, 0);
-    LCD_ShowString(320, 120, 1, Yval, WHITE, BLACK, 0);
-    LCD_ShowString(320, 140, 1, Sval, WHITE, BLACK, 0);
 
-
-    drawCurrentShape(ShapeNum, GREEN);
-    _delay_ms(50);
-    if (buttonXVal < 20) 
+    if (button.up == BUTTON_PRESSED) 
     {
-      drawCurrentShape(ShapeNum, BLACK);
-      ShapeShiftUp();
-      
+      aTRS_ENG_drawCurrentShape(BLACK);
+      aTRS_ENG_ShapeShiftUp();
     }
-    else if (buttonXVal > 1000)
+    
+    if (button.down == BUTTON_PRESSED)
     {
-      drawCurrentShape(ShapeNum, BLACK);
-      ShapeShiftDown();
+      if (aTRS_ENG_BoundaryCheck_Translate(2))
+      {
+        aTRS_ENG_drawCurrentShape(BLACK);
+        aTRS_ENG_ShapeShiftDown();
+      }
+      else
+      {
+        aTRS_ENG_AttachToField();
+        aTRS_ENG_CheckClearedRows();
+        
+        if (aTRS_ENG_GenerateNewShape() == NULL) 
+        {
+          aTRS_ENG_ClearField();
+          aTRS_ENG_refreshAllBlocks(BLACK);
+          aTRS_ENG_returnShapeCursorHome();
+          aTRS_ENG_GenerateNewShape();
+        }
+      }
     } 
 
-    if (buttonYVal < 20)
+    if (button.right == BUTTON_PRESSED)
     {
-      drawCurrentShape(ShapeNum, BLACK);
-      ShapeShiftRight();
-      
-    }
-    else if (buttonYVal > 1000)
-    {
-      drawCurrentShape(ShapeNum, BLACK);
-      ShapeShiftLeft();
+      if (aTRS_ENG_BoundaryCheck_Translate(1))
+      {
+        aTRS_ENG_drawCurrentShape(BLACK);
+        aTRS_ENG_ShapeShiftRight();   
+           
+      }     
     }
 
-    if (buttonSwitch == 0) ShapeRotate();
-    
+    if (button.left == BUTTON_PRESSED)
+    {
+      if (aTRS_ENG_BoundaryCheck_Translate(3))
+      {
+        aTRS_ENG_drawCurrentShape(BLACK);
+        aTRS_ENG_ShapeShiftLeft();
+      }
+    }
 
-    
-    
+    if (button.rotate == BUTTON_PRESSED) 
+    {
+      if(aTRS_ENG_BoundaryCheck_Rotate())
+      {
+        aTRS_ENG_ShapeRotate();
+      }
+    }
 
-    
-
+    aTRS_ENG_drawCurrentShape(YELLOW);
+    _delay_ms(10);
 
 
   }

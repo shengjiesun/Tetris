@@ -2,27 +2,25 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
-ADC.c
+DeviceDriver\BackLight.c
 
-BackLight.c
+DeviceDriver\Buttons.c
 
-Buttons.c
+DeviceDriver\DS1307RTC.c
 
-DS1307RTC.c
+DeviceDriver\LCD_Driver.c
 
-LCD_Driver.c
+DeviceDriver\LCD_GUI.c
 
-LCD_GUI.c
+Driver\ADC.c
+
+Driver\SPI.c
+
+Driver\TWI.c
+
+Driver\USART.c
 
 main.c
 
-shapes.c
-
-SPI.c
-
-Tetris_GameEngine.c
-
-TWI.c
-
-USART.c
+TetrisApp\Tetris_GameEngine.c
 

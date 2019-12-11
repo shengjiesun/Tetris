@@ -7,39 +7,38 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
-#include "shapes.h"
 
-uint8_t shape0[] = {  0, 0, 1, 0,
+const uint8_t shape0[] = {  0, 0, 1, 0,
                       0, 0, 1, 0,
                       0, 0, 1, 0,
                       0, 0, 1, 0,};
 
-uint8_t shape1[] = {  0, 0, 1, 0,
+const uint8_t shape1[] = {  0, 0, 1, 0,
                       0, 1, 1, 0,
                       0, 1, 0, 0,
                       0, 0, 0, 0,};
 
-uint8_t shape2[] = {  0, 1, 0, 0,
+const uint8_t shape2[] = {  0, 1, 0, 0,
                       0, 1, 1, 0,
                       0, 0, 1, 0,
                       0, 0, 0, 0,};
 
-uint8_t shape3[] = {  0, 0, 0, 0,
+const uint8_t shape3[] = {  0, 0, 0, 0,
                       0, 1, 1, 0,
                       0, 1, 1, 0,
                       0, 0, 0, 0,};
 
-uint8_t shape4[] = {  0, 0, 1, 0,
+const uint8_t shape4[] = {  0, 0, 1, 0,
                       0, 0, 1, 0,
                       0, 1, 1, 0,
                       0, 0, 0, 0,};
 
-uint8_t shape5[] = {  0, 1, 0, 0,
+const uint8_t shape5[] = {  0, 1, 0, 0,
                       0, 1, 0, 0,
                       0, 1, 1, 0,
                       0, 0, 0, 0,};
 
-uint8_t shape6[] = {  0, 0, 1, 0,
+const uint8_t shape6[] = {  0, 0, 1, 0,
                       0, 1, 1, 0,
                       0, 0, 1, 0,
                       0, 0, 0, 0,};
@@ -69,23 +68,33 @@ uint8_t Rotate(uint8_t px, uint8_t py, uint8_t r)
 
 uint8_t* showShape(uint8_t shapeNum)
 {
+  uint8_t* tmp;
   switch (shapeNum)
   {
     case 0:
-      return shape0;
+      tmp = shape0;
+      break;
     case 1:
-      return shape1;
+      tmp = shape1;
+      break;
     case 2:
-      return shape2;
+      tmp = shape2;
+      break;
     case 3:
-      return shape3;
+      tmp = shape3;
+      break;
     case 4:
-      return shape4;
+      tmp = shape4;
+      break;
     case 5:
-      return shape5;
+      tmp = shape5;
+      break;
     case 6:
-      return shape6;
+      tmp = shape6;
+      break;
     default:
-      return shape0;
+      tmp = shape0;
+      break;
   }
+  return tmp;
 }

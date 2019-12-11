@@ -16,8 +16,10 @@ main.d main.o: .././main.c \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stddef.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h \
- .././LCD_Driver.h .././SPI.h .././DS1307RTC.h .././TWI.h .././USART.h \
- .././Tetris_GameEngine.h .././Buttons.h
+ ../DeviceDriver/inc/LCD_Driver.h ../Driver/inc/SPI.h \
+ ../DeviceDriver/inc/DS1307RTC.h ../Driver/inc/TWI.h \
+ ../Driver/inc/USART.h ../TetrisApp/inc/Tetris_GameEngine.h \
+ ../DeviceDriver/inc/Buttons.h
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -53,16 +55,16 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h:
 
-.././LCD_Driver.h:
+../DeviceDriver/inc/LCD_Driver.h:
 
-.././SPI.h:
+../Driver/inc/SPI.h:
 
-.././DS1307RTC.h:
+../DeviceDriver/inc/DS1307RTC.h:
 
-.././TWI.h:
+../Driver/inc/TWI.h:
 
-.././USART.h:
+../Driver/inc/USART.h:
 
-.././Tetris_GameEngine.h:
+../TetrisApp/inc/Tetris_GameEngine.h:
 
-.././Buttons.h:
+../DeviceDriver/inc/Buttons.h:
