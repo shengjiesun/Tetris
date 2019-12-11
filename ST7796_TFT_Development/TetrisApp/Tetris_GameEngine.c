@@ -65,6 +65,7 @@ static const uint8_t* mShapeArray[7] = {shape0, shape1, shape2, shape3, shape4, 
 
 static uint8_t *field[SCREEN_HEIGHT * SCREEN_WIDTH] = {0};
 static uint8_t* mCurrentShape = shape0;
+static uint16_t mScore = 0;
 
 static __tetrisFrame TetrisFrame =
 {
@@ -286,9 +287,11 @@ bool aTRS_ENG_BoundaryCheck_Rotate(void)
 void aTRS_ENG_CheckClearedRows(void)
 {
   __unitBlockPos blockPos;
+  uint8_t clearedRowNum = 0;
   for (uint8_t i = 0; i < SCREEN_HEIGHT; i++)
   {
     uint8_t blockNum = 0;
+    
     for (uint8_t j = 0; j < SCREEN_WIDTH; j++)
     {
       if (field[i*SCREEN_WIDTH + j])
@@ -296,8 +299,9 @@ void aTRS_ENG_CheckClearedRows(void)
         blockNum++;
       }
     }
+
     if (blockNum == SCREEN_WIDTH)
-    {
+    { 
       //Render cleared row and update field array
       for (uint8_t k = 0; k < SCREEN_WIDTH; k++)
       {
@@ -337,8 +341,10 @@ void aTRS_ENG_CheckClearedRows(void)
           }
         }
       }
-      aTRS_ENG_returnShapeCursorHome();
+      clearedRowNum++;
+      mScore += 100*clearedRowNum;
     }
+    aTRS_ENG_returnShapeCursorHome();
   }
 }
 
@@ -351,6 +357,27 @@ void aTRS_ENG_ClearField(void)
       field[i*SCREEN_WIDTH + j] = 0;
     }
   }
+}
+
+uint16_t aTRS_ENG_GetScore(void)
+{
+  return mScore;
+}
+
+void aTRS_ENG_GameOver(void)
+{
+  LCD_ShowString(60, 100, 4, "GAME", WHITE, BLACK, 0);
+  LCD_ShowString(60, 150, 4, "OVER", WHITE, BLACK, 0);
+  _delay_ms(1000);
+  aTRS_ENG_refreshAllBlocks(WHITE);
+  aTRS_ENG_ClearField();
+  LCD_GUI_DrawFillRectangle(TetrisFrame.frame_x1+1,
+                          TetrisFrame.frame_y1+1,
+                          TetrisFrame.frame_x2-1,
+                          TetrisFrame.frame_y2-1,
+                          BLACK);
+  aTRS_ENG_returnShapeCursorHome();
+  aTRS_ENG_GenerateNewShape();
 }
 
 
@@ -408,6 +435,7 @@ void aTRS_ENG_refreshAllBlocks(uint16_t colour)
       11 +(j*UNIT_BLOCK_SIZE + j) + UNIT_BLOCK_SIZE,
       9 + (i*UNIT_BLOCK_SIZE + i) + UNIT_BLOCK_SIZE,
       colour);
+      _delay_ms(10);
     }
   }
 }

@@ -16,7 +16,7 @@
 
  
 static bool mButtonStatusNew;
-static bool mButtonStatusOld;
+static bool mButtonStatusOld[5] = {BUTTON_UNPRESSED,BUTTON_UNPRESSED,BUTTON_UNPRESSED,BUTTON_UNPRESSED,BUTTON_UNPRESSED};
 
 static __Button_Status button;
 
@@ -26,7 +26,6 @@ void pDDRV_Button_init(void)
   DDRF &= ~((1<<PF0) | (1<<PF1) | (1<<PF2) | (1<<PF3) | (1<<PF4));
   PORTF |= ((1<<PF0) | (1<<PF1) | (1<<PF2) | (1<<PF3) | (1<<PF4));
   mButtonStatusNew = BUTTON_UNPRESSED;
-  mButtonStatusOld = BUTTON_UNPRESSED;
 }
 
 uint8_t pDDRV_Button_readButton(__ButtonTypeDef buttonNum)
@@ -67,7 +66,7 @@ __Button_Status pDDRV_Button_GetStatus(void)
   uint8_t mButtonStatusCount = 0;
   for (uint8_t NumBut = 0; NumBut < BUTTON_NUM; NumBut++)
   {
-    
+    mButtonStatusCount = 0;
     //Check button status several times in a roll
     for (int i = 0; i < BUTTON_READ_NUM; i++)
     {
@@ -85,14 +84,14 @@ __Button_Status pDDRV_Button_GetStatus(void)
     else
     {
       mButtonStatusNew = BUTTON_UNPRESSED;
-      mButtonStatusOld = BUTTON_UNPRESSED;
+      mButtonStatusOld[NumBut] = BUTTON_UNPRESSED;
     }
 
     //If the new button status is pressed then output status is pressed
-    if ((mButtonStatusNew == BUTTON_PRESSED) && (mButtonStatusNew != mButtonStatusOld ))
+    if ((mButtonStatusNew == BUTTON_PRESSED) && (mButtonStatusNew != mButtonStatusOld[NumBut] ))
     {
       outputButtonStatus = BUTTON_PRESSED;
-      mButtonStatusOld = mButtonStatusNew;
+      mButtonStatusOld[NumBut] = mButtonStatusNew;
     } 
     else
     {
@@ -108,7 +107,7 @@ __Button_Status pDDRV_Button_GetStatus(void)
         ButtonStatus.left = outputButtonStatus;
         break;
       case BUTTON_DOWN:
-        ButtonStatus.down = outputButtonStatus;
+        ButtonStatus.down = mButtonStatusNew;
         break;
       case BUTTON_RIGHT:
         ButtonStatus.right = outputButtonStatus;

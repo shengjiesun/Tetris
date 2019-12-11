@@ -51,18 +51,22 @@ int main(void)
   while (1)
   {
     __Button_Status button = pDDRV_Button_GetStatus();
+
+    char ScoreString[7];
     char B_up[2];
     char B_left[2];
     char B_down[2];
     char B_right[2];
     char B_rotate[2];
 
+    sprintf(ScoreString, "%6d", aTRS_ENG_GetScore());
     sprintf(B_up, "%d", button.up);
     sprintf(B_left, "%d", button.left);
     sprintf(B_down, "%d", button.down);
     sprintf(B_right, "%d", button.right);
-    sprintf(B_rotate, "%d", button.right);
+    sprintf(B_rotate, "%d", button.rotate);
 
+    LCD_ShowString(320, 80, 1, ScoreString, WHITE, BLACK, 0);
     LCD_ShowString(320, 100, 1, B_up, WHITE, BLACK, 0);
     LCD_ShowString(320, 120, 1, B_left, WHITE, BLACK, 0);
     LCD_ShowString(320, 140, 1, B_down, WHITE, BLACK, 0);
@@ -91,10 +95,8 @@ int main(void)
         
         if (aTRS_ENG_GenerateNewShape() == NULL) 
         {
-          aTRS_ENG_ClearField();
-          aTRS_ENG_refreshAllBlocks(BLACK);
-          aTRS_ENG_returnShapeCursorHome();
-          aTRS_ENG_GenerateNewShape();
+          aTRS_ENG_GameOver();
+
         }
       }
     } 

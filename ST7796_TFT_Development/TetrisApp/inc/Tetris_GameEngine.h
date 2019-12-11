@@ -73,4 +73,6 @@ bool aTRS_ENG_BoundaryCheck_Rotate(void);
 
 uint8_t* aTRS_ENG_GenerateNewShape(void);
 void aTRS_ENG_CheckClearedRows(void);
+uint16_t aTRS_ENG_GetScore(void);
+void aTRS_ENG_GameOver(void);
 #endif /* TETRIS_GAMEENGINE_H_ */
