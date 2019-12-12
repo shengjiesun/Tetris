@@ -85,6 +85,13 @@ static __shapeCursor mShapeCursor =
   .rot = 0
 };
 
+static __shapeCursor mPreviousCursor =
+{
+  .row = 0,
+  .col = 5,
+  .rot = 0
+};
+
 /************************************************************************/
 /* Public function definitions                                          */
 /************************************************************************/
@@ -118,6 +125,8 @@ uint8_t* aTRS_ENG_GenerateNewShape(void)
       }
     }
   }
+
+  
   return mCurrentShape;
 }
 
@@ -134,28 +143,36 @@ void aTRS_ENG_returnShapeCursorHome()
 
 void aTRS_ENG_ShapeShiftUp(void)
 {
+  mPreviousCursor = mShapeCursor;
   mShapeCursor.row--;
 }
 
 void aTRS_ENG_ShapeShiftDown(void)
 {
+  mPreviousCursor = mShapeCursor;
   mShapeCursor.row++;
 }
 
 void aTRS_ENG_ShapeShiftRight(void)
 {
+  mPreviousCursor = mShapeCursor;
   mShapeCursor.col++;
 }
 
 void aTRS_ENG_ShapeShiftLeft(void)
 {
+  mPreviousCursor = mShapeCursor;
   mShapeCursor.col--;
 }
 
 void aTRS_ENG_ShapeRotate(void)
 {
+  mPreviousCursor = mShapeCursor;
   mShapeCursor.rot++;
-  if (mShapeCursor.rot >= 4) mShapeCursor.rot = 0;
+  if (mShapeCursor.rot >= 4) 
+  {
+    mShapeCursor.rot = 0;
+  }
 }
 
 void aTRS_ENG_drawCurrentShape(uint16_t colour)
@@ -174,7 +191,7 @@ void aTRS_ENG_drawCurrentShape(uint16_t colour)
       if (mCurrentShape[Rotate(j, i, mShapeCursor.rot)]) mColour = colour;
       else mColour = BLACK;
 
-      if ((mShapeCursor.col + j >= 0) && (mShapeCursor.col + j < SCREEN_WIDTH) && (mShapeCursor.row + i < SCREEN_HEIGHT)) //Check if shape is out of field
+      if ((mShapeCursor.col + j >= 0) && (mShapeCursor.col + j < SCREEN_WIDTH) && (mShapeCursor.row + i < SCREEN_HEIGHT) && (mShapeCursor.row + i >= 0)) //Check if shape is out of field
       {
         if (field[(mShapeCursor.row + i) * SCREEN_WIDTH + (mShapeCursor.col + j)] == 0) //Check if field pos is blank
         {
@@ -230,15 +247,18 @@ bool aTRS_ENG_BoundaryCheck_Translate(uint8_t direction)
 
   switch (direction)
   {
+    case 0:
+      tmpShapeCursor.row--;
+      break;
     case 1:
-    tmpShapeCursor.col++;
-    break;
+      tmpShapeCursor.col++;
+      break;
     case 2:
-    tmpShapeCursor.row++;
-    break;
+      tmpShapeCursor.row++;
+      break;
     case 3:
-    tmpShapeCursor.col--;
-    break;
+      tmpShapeCursor.col--;
+      break;
     default:
     break;
   }
@@ -249,7 +269,7 @@ bool aTRS_ENG_BoundaryCheck_Translate(uint8_t direction)
     {
       //Check if exceed game frame
       if ((mCurrentShape[Rotate(nCol, nRow, mShapeCursor.rot)] != 0)
-      && ((tmpShapeCursor.col + nCol < 0) || (tmpShapeCursor.col + nCol > SCREEN_WIDTH - 1) || (tmpShapeCursor.row + nRow > SCREEN_HEIGHT -1)))
+      && ((tmpShapeCursor.col + nCol < 0) || (tmpShapeCursor.col + nCol > SCREEN_WIDTH - 1) || (tmpShapeCursor.row + nRow < 0) || (tmpShapeCursor.row + nRow > SCREEN_HEIGHT -1)))
       {
         return false;
       }
@@ -275,7 +295,7 @@ bool aTRS_ENG_BoundaryCheck_Rotate(void)
     for (uint8_t nCol = 0; nCol < 4; nCol++)
     {
       if ((mCurrentShape[Rotate(nCol, nRow, tmpShapeCursor.rot)] != 0)
-      && ((tmpShapeCursor.col + nCol < 0) || (tmpShapeCursor.col + nCol > SCREEN_WIDTH - 1) || (tmpShapeCursor.row + nRow > SCREEN_HEIGHT -1)))
+      && ((tmpShapeCursor.col + nCol < 0) || (tmpShapeCursor.col + nCol > SCREEN_WIDTH - 1) || (tmpShapeCursor.row + nRow < 0) || (tmpShapeCursor.row + nRow > SCREEN_HEIGHT -1)))
       {
         return false;
       }

@@ -77,8 +77,11 @@ int main(void)
 
     if (button.up == BUTTON_PRESSED) 
     {
-      aTRS_ENG_drawCurrentShape(BLACK);
-      aTRS_ENG_ShapeShiftUp();
+      if (aTRS_ENG_BoundaryCheck_Translate(0))
+      {
+        aTRS_ENG_drawCurrentShape(BLACK);
+        aTRS_ENG_ShapeShiftUp();
+      }
     }
     
     if (button.down == BUTTON_PRESSED)
@@ -106,8 +109,7 @@ int main(void)
       if (aTRS_ENG_BoundaryCheck_Translate(1))
       {
         aTRS_ENG_drawCurrentShape(BLACK);
-        aTRS_ENG_ShapeShiftRight();   
-           
+        aTRS_ENG_ShapeShiftRight();    
       }     
     }
 
