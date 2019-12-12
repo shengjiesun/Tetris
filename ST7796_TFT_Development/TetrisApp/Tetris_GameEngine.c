@@ -61,11 +61,24 @@ static const uint8_t shape6[] = {0, 0, 1, 0,\
                                  0, 0, 1, 0,\
                                  0, 0, 0, 0,};
 
+static const uint16_t shapeColour[8] =
+{
+  RED,
+  GREEN,
+  YELLOW,
+  MAGENTA,
+  BLUE,
+  GRAY,
+  BROWN,
+  CYAN,
+};
+
 static const uint8_t* mShapeArray[7] = {shape0, shape1, shape2, shape3, shape4, shape5, shape6};
 
 static uint8_t *field[SCREEN_HEIGHT * SCREEN_WIDTH] = {0};
 static uint8_t* mCurrentShape = shape0;
 static uint16_t mScore = 0;
+static uint8_t mMoveDirection;
 
 static __tetrisFrame TetrisFrame =
 {
@@ -82,14 +95,16 @@ static __shapeCursor mShapeCursor =
 {
   .row = 0,
   .col = 5,
-  .rot = 0
+  .rot = 0,
+  .colour = RED
 };
 
 static __shapeCursor mPreviousCursor =
 {
   .row = 0,
   .col = 5,
-  .rot = 0
+  .rot = 0,
+  .colour = RED
 };
 
 /************************************************************************/
@@ -112,7 +127,9 @@ void aTRS_ENG_drawBoundary(void)
 uint8_t* aTRS_ENG_GenerateNewShape(void)
 {
   uint8_t newShape = rand() % 7;
+  uint8_t newColourNum = rand() % 8;
   mCurrentShape = mShapeArray[newShape];
+  mShapeCursor.colour = shapeColour[newColourNum]; 
   aTRS_ENG_returnShapeCursorHome();
 
   for (uint8_t nRow = 0; nRow < 4; nRow++)
@@ -143,30 +160,35 @@ void aTRS_ENG_returnShapeCursorHome()
 
 void aTRS_ENG_ShapeShiftUp(void)
 {
+  mMoveDirection = MOVE_UP;
   mPreviousCursor = mShapeCursor;
   mShapeCursor.row--;
 }
 
 void aTRS_ENG_ShapeShiftDown(void)
 {
+  mMoveDirection = MOVE_DOWN;
   mPreviousCursor = mShapeCursor;
   mShapeCursor.row++;
 }
 
 void aTRS_ENG_ShapeShiftRight(void)
 {
+  mMoveDirection = MOVE_RIGHT;
   mPreviousCursor = mShapeCursor;
   mShapeCursor.col++;
 }
 
 void aTRS_ENG_ShapeShiftLeft(void)
 {
+  mMoveDirection = MOVE_LEFT;
   mPreviousCursor = mShapeCursor;
   mShapeCursor.col--;
 }
 
 void aTRS_ENG_ShapeRotate(void)
 {
+  mMoveDirection = MOVE_ROTATE;
   mPreviousCursor = mShapeCursor;
   mShapeCursor.rot++;
   if (mShapeCursor.rot >= 4) 
@@ -175,9 +197,8 @@ void aTRS_ENG_ShapeRotate(void)
   }
 }
 
-void aTRS_ENG_drawCurrentShape(uint16_t colour)
+void aTRS_ENG_drawCurrentShape(void)
 {
-  
   uint8_t rowPos = mShapeCursor.row;
   uint8_t colPos = mShapeCursor.col;
   
@@ -188,7 +209,7 @@ void aTRS_ENG_drawCurrentShape(uint16_t colour)
   {
     for (uint8_t j = 0; j < 4; j++)
     {
-      if (mCurrentShape[Rotate(j, i, mShapeCursor.rot)]) mColour = colour;
+      if (mCurrentShape[Rotate(j, i, mShapeCursor.rot)]) mColour = mShapeCursor.colour;
       else mColour = BLACK;
 
       if ((mShapeCursor.col + j >= 0) && (mShapeCursor.col + j < SCREEN_WIDTH) && (mShapeCursor.row + i < SCREEN_HEIGHT) && (mShapeCursor.row + i >= 0)) //Check if shape is out of field
@@ -210,7 +231,6 @@ void aTRS_ENG_drawCurrentShape(uint16_t colour)
     colPos = mShapeCursor.col;
     rowPos++;
   }
-  aTRS_ENG_moveShapeCursor(mShapeCursor.row, mShapeCursor.col);
 }
 
 void aTRS_ENG_AttachToField(void)
@@ -397,6 +417,8 @@ void aTRS_ENG_GameOver(void)
                           TetrisFrame.frame_y2-1,
                           BLACK);
   aTRS_ENG_returnShapeCursorHome();
+  mScore = 0;
+
   aTRS_ENG_GenerateNewShape();
 }
 

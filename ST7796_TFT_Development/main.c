@@ -79,7 +79,6 @@ int main(void)
     {
       if (aTRS_ENG_BoundaryCheck_Translate(0))
       {
-        aTRS_ENG_drawCurrentShape(BLACK);
         aTRS_ENG_ShapeShiftUp();
       }
     }
@@ -88,7 +87,6 @@ int main(void)
     {
       if (aTRS_ENG_BoundaryCheck_Translate(2))
       {
-        aTRS_ENG_drawCurrentShape(BLACK);
         aTRS_ENG_ShapeShiftDown();
       }
       else
@@ -99,7 +97,6 @@ int main(void)
         if (aTRS_ENG_GenerateNewShape() == NULL) 
         {
           aTRS_ENG_GameOver();
-
         }
       }
     } 
@@ -108,7 +105,6 @@ int main(void)
     {
       if (aTRS_ENG_BoundaryCheck_Translate(1))
       {
-        aTRS_ENG_drawCurrentShape(BLACK);
         aTRS_ENG_ShapeShiftRight();    
       }     
     }
@@ -117,7 +113,6 @@ int main(void)
     {
       if (aTRS_ENG_BoundaryCheck_Translate(3))
       {
-        aTRS_ENG_drawCurrentShape(BLACK);
         aTRS_ENG_ShapeShiftLeft();
       }
     }
@@ -130,7 +125,7 @@ int main(void)
       }
     }
 
-    aTRS_ENG_drawCurrentShape(YELLOW);
+    aTRS_ENG_drawCurrentShape();
     _delay_ms(10);
 
 

@@ -12,6 +12,16 @@
 #define SCREEN_WIDTH  14
 #define SCREEN_HEIGHT 20
 
+//Keep track of shape moving direction
+typedef enum
+{
+  MOVE_UP = 0,
+  MOVE_LEFT,
+  MOVE_DOWN,
+  MOVE_RIGHT,
+  MOVE_ROTATE
+};
+
 typedef struct 
 {
   uint16_t frame_x1;
@@ -56,11 +66,12 @@ typedef struct
   int8_t row;
   int8_t col;
   uint8_t rot;
+  uint16_t colour;
 } __shapeCursor;
 
 void aTRS_ENG_drawBoundary(void);
 void aTRS_ENG_refreshAllBlocks(uint16_t colour);
-void aTRS_ENG_drawCurrentShape(uint16_t colour);
+void aTRS_ENG_drawCurrentShape(void);
 void aTRS_ENG_ShapeShiftUp(void);
 void aTRS_ENG_ShapeShiftDown(void);
 void aTRS_ENG_ShapeShiftRight(void);
