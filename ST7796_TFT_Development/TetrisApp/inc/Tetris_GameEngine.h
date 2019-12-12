@@ -71,7 +71,7 @@ typedef struct
 
 void aTRS_ENG_drawBoundary(void);
 void aTRS_ENG_refreshAllBlocks(uint16_t colour);
-void aTRS_ENG_drawCurrentShape(void);
+void aTRS_ENG_drawCurrentShape(uint16_t colour);
 void aTRS_ENG_ShapeShiftUp(void);
 void aTRS_ENG_ShapeShiftDown(void);
 void aTRS_ENG_ShapeShiftRight(void);

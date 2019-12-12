@@ -197,7 +197,7 @@ void aTRS_ENG_ShapeRotate(void)
   }
 }
 
-void aTRS_ENG_drawCurrentShape(void)
+void aTRS_ENG_drawCurrentShape(uint16_t colour)
 {
   uint8_t rowPos = mShapeCursor.row;
   uint8_t colPos = mShapeCursor.col;
@@ -209,7 +209,7 @@ void aTRS_ENG_drawCurrentShape(void)
   {
     for (uint8_t j = 0; j < 4; j++)
     {
-      if (mCurrentShape[Rotate(j, i, mShapeCursor.rot)]) mColour = mShapeCursor.colour;
+      if (mCurrentShape[Rotate(j, i, mShapeCursor.rot)]) mColour = colour;
       else mColour = BLACK;
 
       if ((mShapeCursor.col + j >= 0) && (mShapeCursor.col + j < SCREEN_WIDTH) && (mShapeCursor.row + i < SCREEN_HEIGHT) && (mShapeCursor.row + i >= 0)) //Check if shape is out of field
@@ -361,9 +361,9 @@ void aTRS_ENG_CheckClearedRows(void)
         //loop through each row to the top row 1
         for (uint8_t m = i; m > 0; m--)
         {
-          field[(m)*SCREEN_WIDTH + l] = field[(m-1)*SCREEN_WIDTH + l];
+          uint8_t tmpBlock = field[(m-1)*SCREEN_WIDTH + l];
           blockPos = getUnitBlockPos(m, l);
-          if (field[(m)*SCREEN_WIDTH + l])
+          if (tmpBlock && !field[(m)*SCREEN_WIDTH + l])
           {
             LCD_GUI_DrawFillRectangle(blockPos.unitBlock_x1,
             blockPos.unitBlock_y1,
@@ -371,7 +371,7 @@ void aTRS_ENG_CheckClearedRows(void)
             blockPos.unitBlock_y2,
             RED);
           }
-          else
+          else if (!tmpBlock && field[(m)*SCREEN_WIDTH + l])
           {
             LCD_GUI_DrawFillRectangle(blockPos.unitBlock_x1,
             blockPos.unitBlock_y1,
@@ -379,6 +379,7 @@ void aTRS_ENG_CheckClearedRows(void)
             blockPos.unitBlock_y2,
             BLACK);
           }
+          field[(m)*SCREEN_WIDTH + l] = field[(m-1)*SCREEN_WIDTH + l];
         }
       }
       clearedRowNum++;
