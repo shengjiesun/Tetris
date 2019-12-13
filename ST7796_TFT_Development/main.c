@@ -38,6 +38,8 @@ uint16_t colourArray[8] =
   BROWN
 };
 
+char mScore[10];
+
 int main(void)
 {
   LCD_Init();
@@ -46,34 +48,22 @@ int main(void)
   pDDRV_Button_init();
   
   aTRS_ENG_drawBoundary();
-  LCD_ShowString(320, 20, 2, "TETRIS", YELLOW, BLACK, 0);
+  LCD_ShowString(270, 10, 4, "TETRIS", YELLOW, BLACK, 0);
+  LCD_GUI_DrawRectangle(320, 90, 380, 163, WHITE);
+  LCD_ShowString(250, 200, 2, "Score", YELLOW, BLACK,0);
+  LCD_ShowNum(340, 200, 2, WHITE, BLACK, (int)aTRS_ENG_GetScore() );
+
+  aTRS_ENG_GenerateNewShape();
+
   
+
   while (1)
   {
+    sprintf(mScore, "%d", aTRS_ENG_GetScore());
+    
     __Button_Status button = pDDRV_Button_GetStatus();
 
-    char ScoreString[7];
-    char B_up[2];
-    char B_left[2];
-    char B_down[2];
-    char B_right[2];
-    char B_rotate[2];
-
-    sprintf(ScoreString, "%6d", aTRS_ENG_GetScore());
-    sprintf(B_up, "%d", button.up);
-    sprintf(B_left, "%d", button.left);
-    sprintf(B_down, "%d", button.down);
-    sprintf(B_right, "%d", button.right);
-    sprintf(B_rotate, "%d", button.rotate);
-
-    LCD_ShowString(320, 80, 1, ScoreString, WHITE, BLACK, 0);
-    LCD_ShowString(320, 100, 1, B_up, WHITE, BLACK, 0);
-    LCD_ShowString(320, 120, 1, B_left, WHITE, BLACK, 0);
-    LCD_ShowString(320, 140, 1, B_down, WHITE, BLACK, 0);
-    LCD_ShowString(320, 160, 1, B_right, WHITE, BLACK, 0);
-    LCD_ShowString(320, 180, 1, B_rotate, WHITE, BLACK, 0);
-
-    
+    char ScoreString[7]; 
 
     if (button.up == BUTTON_PRESSED) 
     {
@@ -95,6 +85,7 @@ int main(void)
       {
         aTRS_ENG_AttachToField();
         aTRS_ENG_CheckClearedRows();
+        LCD_ShowNum(340, 200, 2, WHITE, BLACK, (int)aTRS_ENG_GetScore() );
         
         if (aTRS_ENG_GenerateNewShape() == NULL) 
         {
@@ -131,7 +122,9 @@ int main(void)
     }
 
     aTRS_ENG_drawCurrentShape(GREEN);
-    _delay_ms(10);
+    aTRS_ENG_drawNextShape(320, 100, BLUE);
+    
+    //aTRS_ENG_UpdateCurrentShape();
 
 
   }

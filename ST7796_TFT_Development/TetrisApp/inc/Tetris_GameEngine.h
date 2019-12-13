@@ -15,7 +15,8 @@
 //Keep track of shape moving direction
 typedef enum
 {
-  MOVE_UP = 0,
+  MOVE_NULL = 0,
+  MOVE_UP,
   MOVE_LEFT,
   MOVE_DOWN,
   MOVE_RIGHT,
@@ -72,6 +73,7 @@ typedef struct
 void aTRS_ENG_drawBoundary(void);
 void aTRS_ENG_refreshAllBlocks(uint16_t colour);
 void aTRS_ENG_drawCurrentShape(uint16_t colour);
+void aTRS_ENG_drawNextShape(uint16_t x, uint16_t y, uint16_t colour);
 void aTRS_ENG_ShapeShiftUp(void);
 void aTRS_ENG_ShapeShiftDown(void);
 void aTRS_ENG_ShapeShiftRight(void);

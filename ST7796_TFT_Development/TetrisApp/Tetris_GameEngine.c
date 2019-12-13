@@ -22,14 +22,16 @@
 /************************************************************************/
 static uint8_t Rotate(uint8_t px, uint8_t py, uint8_t r);
 static __unitBlockPos getUnitBlockPos(uint8_t row, uint8_t col);
+void drawUnitBlock(__unitBlockPos block, uint16_t colour);
+static __unitBlockPos getNextShapeUnitBlockPos(uint16_t x1, uint16_t y1, uint8_t row, uint8_t col);
 
 /************************************************************************/
 /* Private variables                                                    */
 /************************************************************************/
-static const uint8_t shape0[] = {0, 0, 1, 0,\
-                                 0, 0, 1, 0,\
-                                 0, 0, 1, 0,\
-                                 0, 0, 1, 0,};
+static const uint8_t shape0[] = {0, 0, 0, 0,\
+                                 1, 1, 1, 1,\
+                                 0, 0, 0, 0,\
+                                 0, 0, 0, 0,};
 
 static const uint8_t shape1[] = {0, 0, 1, 0,\
                                  0, 1, 1, 0,\
@@ -77,8 +79,11 @@ static const uint8_t* mShapeArray[7] = {shape0, shape1, shape2, shape3, shape4, 
 
 static uint8_t *field[SCREEN_HEIGHT * SCREEN_WIDTH] = {0};
 static uint8_t* mCurrentShape = shape0;
+static uint8_t* mNextShape = NULL;
+static uint8_t mNextShapeIndex = 0;
 static uint16_t mScore = 0;
-static uint8_t mMoveDirection;
+static int8_t mMoveDirection = MOVE_NULL;
+static bool newGame = true;
 
 static __tetrisFrame TetrisFrame =
 {
@@ -126,9 +131,14 @@ void aTRS_ENG_drawBoundary(void)
 
 uint8_t* aTRS_ENG_GenerateNewShape(void)
 {
-  uint8_t newShape = rand() % 7;
+  if (!newGame)
+  {
+    mCurrentShape = mNextShape;
+  }
+  mNextShapeIndex = rand() % 7;
+  mNextShape = mShapeArray[mNextShapeIndex];
   uint8_t newColourNum = rand() % 8;
-  mCurrentShape = mShapeArray[newShape];
+    
   mShapeCursor.colour = shapeColour[newColourNum]; 
   aTRS_ENG_returnShapeCursorHome();
 
@@ -143,7 +153,7 @@ uint8_t* aTRS_ENG_GenerateNewShape(void)
     }
   }
 
-  
+  newGame = false;
   return mCurrentShape;
 }
 
@@ -197,6 +207,104 @@ void aTRS_ENG_ShapeRotate(void)
   }
 }
 
+void aTRS_ENG_UpdateCurrentShape(void)
+{
+  uint8_t rowPos = mPreviousCursor.row;
+  uint8_t colPos = mPreviousCursor.col;
+  __unitBlockPos blockPos;
+  uint16_t mColour;
+
+  if ((mMoveDirection != MOVE_ROTATE) && (mMoveDirection != MOVE_NULL))
+  {
+    for (uint8_t i = 0; i < 4; i++)
+    { 
+      if (mMoveDirection == MOVE_LEFT)
+      {
+        blockPos = getUnitBlockPos(rowPos + i, colPos+3);
+      }
+
+      if (mMoveDirection == MOVE_DOWN)
+      {
+        blockPos = getUnitBlockPos(rowPos, colPos + i);
+      }
+
+      if (mMoveDirection == MOVE_RIGHT)
+      {
+        blockPos = getUnitBlockPos(rowPos + i, colPos);
+      }
+
+      if (mMoveDirection == MOVE_UP)
+      {
+        blockPos = getUnitBlockPos(rowPos + 3, colPos + i);
+      }
+
+      drawUnitBlock(blockPos, BLACK);
+    }
+  }
+
+  for (uint8_t i = 0; i < 4; i++)
+  {
+    for (uint8_t j = 0; j < 4; j++)
+    {
+      if (mCurrentShape[Rotate(j, i, mShapeCursor.rot)]) mColour = mShapeCursor.colour;
+      else mColour = BLACK;
+
+      if ((mShapeCursor.col + j >= 0) && (mShapeCursor.col + j < SCREEN_WIDTH) && (mShapeCursor.row + i < SCREEN_HEIGHT) && (mShapeCursor.row + i >= 0)) //Check if shape is out of field
+      {
+        if (field[(mShapeCursor.row + i) * SCREEN_WIDTH + (mShapeCursor.col + j)] == 0) //Check if field pos is blank
+        {
+          
+          if (mMoveDirection == MOVE_LEFT)
+          {
+            if ((j > 0) && (mCurrentShape[Rotate(j, i, mShapeCursor.rot)] != mCurrentShape[Rotate(j-1, i, mPreviousCursor.rot)]))
+            {
+              blockPos = getUnitBlockPos(rowPos, colPos) ;
+              drawUnitBlock(blockPos, mColour);
+            }
+          }
+          else if (mMoveDirection == MOVE_RIGHT)
+          {
+            if ((j < 3) && (mCurrentShape[Rotate(j, i, mShapeCursor.rot)] != mCurrentShape[Rotate(j+1, i, mPreviousCursor.rot)]))
+            {
+              blockPos = getUnitBlockPos(rowPos, colPos) ;
+              drawUnitBlock(blockPos, mColour);
+            }
+          }
+          else if (mMoveDirection == MOVE_DOWN)
+          {
+            if ((i < 3) && (mCurrentShape[Rotate(j, i, mShapeCursor.rot)] != mCurrentShape[Rotate(j, i+1, mPreviousCursor.rot)]))
+            {
+              blockPos = getUnitBlockPos(rowPos, colPos) ;
+              drawUnitBlock(blockPos, mColour);
+            }
+          }
+          else if (mMoveDirection == MOVE_UP)
+          {
+            if ((i > 0) && (mCurrentShape[Rotate(j, i, mShapeCursor.rot)] != mCurrentShape[Rotate(j, i-1, mPreviousCursor.rot)]))
+            {
+              blockPos = getUnitBlockPos(rowPos, colPos) ;
+              drawUnitBlock(blockPos, mColour);
+            }            
+          }
+          else
+          {          
+            blockPos = getUnitBlockPos(rowPos, colPos) ;
+            
+            drawUnitBlock(blockPos, mColour);
+          }
+        }
+      }
+
+      colPos++;
+    }
+    colPos = mShapeCursor.col;
+    rowPos++;
+  }
+  
+  //aTRS_ENG_drawCurrentShape(GREEN);
+  mMoveDirection = MOVE_NULL;
+}
+
 void aTRS_ENG_drawCurrentShape(uint16_t colour)
 {
   uint8_t rowPos = mShapeCursor.row;
@@ -218,17 +326,38 @@ void aTRS_ENG_drawCurrentShape(uint16_t colour)
         {
             blockPos = getUnitBlockPos(rowPos, colPos) ;
             
-            LCD_GUI_DrawFillRectangle(blockPos.unitBlock_x1,
-                                      blockPos.unitBlock_y1,
-                                      blockPos.unitBlock_x2,
-                                      blockPos.unitBlock_y2,
-                                      mColour);
+            drawUnitBlock(blockPos, mColour);
         }
       }
 
       colPos++;
     }
     colPos = mShapeCursor.col;
+    rowPos++;
+  }
+}
+
+void aTRS_ENG_drawNextShape(uint16_t x, uint16_t y, uint16_t colour)
+{
+  uint8_t rowPos = 0;
+  uint8_t colPos = 0;
+  
+  __unitBlockPos blockPos;
+  uint16_t mColour;
+  
+  for (uint8_t i = 0; i < 4; i++)
+  {
+    for (uint8_t j = 0; j < 4; j++)
+    {
+      if (mNextShape[Rotate(j, i, 0)]) mColour = colour;
+      else mColour = BLACK;
+          blockPos = getNextShapeUnitBlockPos(x, y, rowPos, colPos) ;
+          
+          drawUnitBlock(blockPos, mColour);
+
+      colPos++;
+    }
+    colPos = 0;
     rowPos++;
   }
 }
@@ -247,11 +376,7 @@ void aTRS_ENG_AttachToField(void)
       {
         field[(mShapeCursor.row + nRow)* SCREEN_WIDTH + mShapeCursor.col+ nCol] = 1;
         blockPos = getUnitBlockPos(mShapeCursor.row + nRow, mShapeCursor.col+ nCol) ;
-        LCD_GUI_DrawFillRectangle(blockPos.unitBlock_x1,
-                                  blockPos.unitBlock_y1,
-                                  blockPos.unitBlock_x2,
-                                  blockPos.unitBlock_y2,
-                                  RED);
+        drawUnitBlock(blockPos, RED);
       }
     }
   }
@@ -365,11 +490,7 @@ void aTRS_ENG_CheckClearedRows(void)
           blockPos = getUnitBlockPos(m, l);
           if (tmpBlock && !field[(m)*SCREEN_WIDTH + l])
           {
-            LCD_GUI_DrawFillRectangle(blockPos.unitBlock_x1,
-            blockPos.unitBlock_y1,
-            blockPos.unitBlock_x2,
-            blockPos.unitBlock_y2,
-            RED);
+            drawUnitBlock(blockPos, RED);
           }
           else if (!tmpBlock && field[(m)*SCREEN_WIDTH + l])
           {
@@ -413,10 +534,10 @@ void aTRS_ENG_GameOver(void)
   aTRS_ENG_refreshAllBlocks(WHITE);
   aTRS_ENG_ClearField();
   LCD_GUI_DrawFillRectangle(TetrisFrame.frame_x1+1,
-                          TetrisFrame.frame_y1+1,
-                          TetrisFrame.frame_x2-1,
-                          TetrisFrame.frame_y2-1,
-                          BLACK);
+                            TetrisFrame.frame_y1+1,
+                            TetrisFrame.frame_x2-1,
+                            TetrisFrame.frame_y2-2,
+                            BLACK);
   aTRS_ENG_returnShapeCursorHome();
   mScore = 0;
 
@@ -461,6 +582,29 @@ static __unitBlockPos getUnitBlockPos(uint8_t row, uint8_t col)
     .unitBlock_y2 = 9 + (row*UNIT_BLOCK_SIZE + row) + UNIT_BLOCK_SIZE,
   };
   return blockPos;
+}
+
+static __unitBlockPos getNextShapeUnitBlockPos(uint16_t x1, uint16_t y1, uint8_t row, uint8_t col)
+{
+  __unitBlockPos blockPos =
+  {
+    .unitBlock_x1 = x1 +(col*UNIT_BLOCK_SIZE + col) + 1,
+    .unitBlock_y1 = y1 + (row*UNIT_BLOCK_SIZE + row) + 1,
+    .unitBlock_x2 = x1 +(col*UNIT_BLOCK_SIZE + col) + UNIT_BLOCK_SIZE,
+    .unitBlock_y2 = y1 + (row*UNIT_BLOCK_SIZE + row) + UNIT_BLOCK_SIZE,
+  };
+  return blockPos;
+}
+
+void drawUnitBlock(__unitBlockPos block, uint16_t colour)
+{
+    LCD_GUI_DrawFillRectangle(block.unitBlock_x1+1,
+                              block.unitBlock_y1+1,
+                              block.unitBlock_x2-1,
+                              block.unitBlock_y2-2,
+                              colour);
+
+    LCD_GUI_DrawLine(block.unitBlock_x1+1, block.unitBlock_y2-1, block.unitBlock_x1+2, block.unitBlock_y2-1, colour);
 }
 
 
